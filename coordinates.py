@@ -4,7 +4,7 @@ class Coordinates:
         self.y = y
         self.angle = angle
 
-    def int(self, x, y):
+    def set_coords(self, x, y):
         self.x = x
         self.y = y
 
