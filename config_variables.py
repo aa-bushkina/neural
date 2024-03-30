@@ -18,3 +18,5 @@ ROAD_WIDTH = 200
 
 # Машина
 MAX_VEL = 10
+IMG_NAMES = ["bike_gray.png", "bike_white.png", "car_blue.png", "car_brown.png", "car_fam.png", "car_gliter.png",
+             "car_orange.png", "car_purple.png", "car_red.png", "car_sport.png"]
