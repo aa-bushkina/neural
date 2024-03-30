@@ -20,3 +20,10 @@ ROAD_WIDTH = 200
 MAX_VEL = 10
 IMG_NAMES = ["bike_gray.png", "bike_white.png", "car_blue.png", "car_brown.png", "car_fam.png", "car_gliter.png",
              "car_orange.png", "car_purple.png", "car_red.png", "car_sport.png"]
+ACTIVATION_TRESHOLD = 0.5
+
+# Управление машиной
+ACC = 0
+BRAKE = 1
+TURN_LEFT = 2
+TURN_RIGHT = 3
