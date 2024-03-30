@@ -20,7 +20,7 @@ class Car:
         self.vel = MAX_VEL/2
         self.acc = 0
         self.initImgs()
-        self.commands = [0,0,0,0]
+        self.commands = [0, 0, 0, 0]
 
     # Инициализация картинки машины
     def initImgs(self):
@@ -57,8 +57,14 @@ class Car:
 
         return (self.x, self.y)
 
+    def draw(self, world):
+        screen_position = world.getScreenCoords(self.x, self.y)
+        rotated_img = pygame.transform.rotate(self.img, -self.rot)
+        new_rect = rotated_img.get_rect(center = screen_position)
+        world.win.blit(rotated_img, new_rect.topleft)
 
-# Деккодируем команду нейронной сети
+
+# Декодируем команду нейронной сети
 def decodeCommand(commands, type):
     if commands[type] > ACTIVATION_TRESHOLD:
         if type == ACC and commands[type] > commands[BRAKE]:
