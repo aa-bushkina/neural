@@ -6,6 +6,8 @@ STARTING_POS = (WIN_WIDTH / 2, WIN_HEIGHT - 100)
 
 # Цвета
 GRAY = (200, 200, 200)
+BLACK = (0, 0, 0)
+BLUE = (0, 0, 255)
 
 # Дорога
 ROAD_DBG = False

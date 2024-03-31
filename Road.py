@@ -5,6 +5,7 @@ import numpy as np
 from math import *
 from coordinates import *
 from random import random, seed
+import pygame as py
 
 
 # Дорога в игровом мире
@@ -91,6 +92,29 @@ class Road:
 
         self.last_ctrl_point_index = get_index(self.last_ctrl_point_index + 1, self.num_points)
         self.bottom_point_index = self.next_center_point_index
+
+    def update(self, world):
+        if world.getScreenCoords(0, self.ctrl_points[self.last_ctrl_point].y)[1] > -SAFE_SPACE:
+            self.createSegment(self.last_ctrl_point)
+
+    def draw(self, world):
+        if (ROAD_DBG):
+            for i in range(len(self.left_border_points)):
+                py.draw.circle(world.win, BLUE, world.getScreenCoords(self.left_border_points[i].x, self.left_border_points[i].y), 2)
+                py.draw.circle(world.win, BLUE, world.getScreenCoords(self.right_border_points[i].x, self.right_border_points[i].y), 2)
+        else:
+            for i in range(len(self.left_border_points)):
+                next_index = get_index(i + 1, NUM_POINTS * self.num_points)
+
+                p = self.left_border_points[i]
+                f = self.left_border_points[next_index]
+                if p.y >= f.y:
+                    py.draw.line(world.win, BLACK, world.getScreenCoords(p.x, p.y), world.getScreenCoords(f.x, f.y), 4)
+
+                p = self.right_border_points[i]
+                f = self.right_border_points[next_index]
+                if p.y >= f.y:
+                    py.draw.line(world.win, BLACK, world.getScreenCoords(p.x, p.y), world.getScreenCoords(f.x, f.y), 4)
 
 
 def get_index(i, cap):
