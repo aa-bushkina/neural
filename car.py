@@ -58,7 +58,7 @@ class Car:
         return (self.x, self.y)
 
     def draw(self, world):
-        screen_position = world.getScreenCoords(self.x, self.y)
+        screen_position = world.get_screen_coords(self.x, self.y)
         rotated_img = pygame.transform.rotate(self.img, -self.rot)
         new_rect = rotated_img.get_rect(center = screen_position)
         world.win.blit(rotated_img, new_rect.topleft)
