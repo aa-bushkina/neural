@@ -24,6 +24,9 @@ BLUE = (0,0,255)
 BLUE_PALE = (200, 200, 255)
 DARK_BLUE = (100, 100, 150)
 
+NODE_FONT = py.font.SysFont("comicsans", 15)
+STAT_FONT = py.font.SysFont("comicsans", 50)
+
 # Дорога
 ROAD_DBG = False
 MAX_ANGLE = 1
