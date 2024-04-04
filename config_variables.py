@@ -8,6 +8,8 @@ STARTING_POS = (WIN_WIDTH / 2, WIN_HEIGHT - 100)
 GRAY = (200, 200, 200)
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
+GREEN = (0, 200, 0)
+RED = (200, 0, 0)
 
 # Дорога
 ROAD_DBG = False
@@ -28,6 +30,8 @@ ACC_STRENGTH = 0.2
 BRAKE_STRENGTH = 1
 TURN_VEL: int = 2
 MAX_VEL_REDUCTION = 1
+SENSOR_DISTANCE = 200
+CAR_DBG = False
 
 # Управление машиной
 ACC = 0
