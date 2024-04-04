@@ -4,6 +4,7 @@ from config_variables import *
 import numpy as np
 from math import *
 from coordinates import *
+from scipy import interpolate
 from random import random, seed
 import pygame as py
 

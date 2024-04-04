@@ -15,17 +15,18 @@ def draw_win(cars, road, world, GEN):
     for car in cars:
         car.draw(world)
 
-    text = STAT_FONT.render("Best Car Score: "+str(int(world.getScore())), 1, BLACK)
-    world.win.blit(text, (world.win_width-text.get_width() - 10, 10))
-    text = STAT_FONT.render("Gen: "+str(GEN), 1, BLACK)
-    world.win.blit(text, (world.win_width-text.get_width() - 10, 50))
+    text = STAT_FONT.render("Best Car Score: " + str(int(world.get_score())), 1, BLACK)
+    world.win.blit(text, (world.win_width - text.get_width() - 10, 10))
+    text = STAT_FONT.render("Gen: " + str(GEN), 1, BLACK)
+    world.win.blit(text, (world.win_width - text.get_width() - 10, 50))
 
     world.bestNN.draw(world)
 
     py.display.update()
-    world.win.blit(background, (0,0))
+    world.win.blit(background, (0, 0))
 
-def main(genomes = [], config = []):
+
+def main(genomes=[], config=[]):
     global GEN
     GEN += 1
 
@@ -35,11 +36,11 @@ def main(genomes = [], config = []):
     t = 0
 
     world = World(STARTING_POS, WIN_WIDTH, WIN_HEIGHT)
-    world.win.blit(background, (0,0))
+    world.win.blit(background, (0, 0))
 
     NNs = []
 
-    for _,g in genomes:
+    for _, g in genomes:
         net = neat.nn.FeedForwardNetwork.create(g, config)
         nets.append(net)
         cars.append(Car(0, 0, 0))
@@ -54,7 +55,7 @@ def main(genomes = [], config = []):
     while run:
         t += 1
         clock.tick(FPS)
-        world.updateScore(0)
+        world.update_score(0)
 
         for event in py.event.get():
             if event.type == py.QUIT:
@@ -62,37 +63,55 @@ def main(genomes = [], config = []):
                 py.quit()
                 quit()
 
-        (xb, yb) = (0,0)
+        (xb, yb) = (0, 0)
         i = 0
-        while(i < len(cars)):
+        while (i < len(cars)):
             car = cars[i]
 
             input = car.getInputs(world, road)
-            input.append(car.vel/MAX_VEL)
+            input.append(car.vel / MAX_VEL)
             car.commands = nets[i].activate(tuple(input))
 
             y_old = car.y
             (x, y) = car.move(t)
 
+            if t > 10 and (car.detect_collision(road) or y > world.get_best_car_pos()[
+                1] + BAD_GENOME_TRESHOLD or y > y_old or car.vel < 0.1):
+                ge[i].fitness -= 1
+                cars.pop(i)
+                nets.pop(i)
+                ge.pop(i)
+                NNs.pop(i)
+            else:
+                ge[i].fitness += -(y - y_old) / 100 + car.vel * SCORE_VEL_MULTIPLIER
+                if ge[i].fitness > world.get_score():
+                    world.update_score(ge[i].fitness)
+                    world.bestNN = NNs[i]
+                    world.bestInputs = input
+                    world.bestCommands = car.commands
+                i += 1
+
             if y < yb:
                 (xb, yb) = (x, y)
-
 
         if len(cars) == 0:
             run = False
             break
 
-        world.updateBestCarPos((xb, yb))
+        world.update_best_car_pos((xb, yb))
         road.update(world)
         draw_win(cars, road, world, GEN)
 
+
 def run(config_path):
-    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
+                                neat.DefaultStagnation, config_path)
     p = neat.Population(config)
     p.add_reporter(neat.StdOutReporter(True))
-    stats =neat.StatisticsReporter()
+    stats = neat.StatisticsReporter()
     p.add_reporter(stats)
     p.run(main, 10000)
+
 
 if __name__ == "__main__":
     local_dir = os.path.dirname(__file__)

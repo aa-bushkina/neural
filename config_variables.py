@@ -2,11 +2,15 @@ import pygame as py
 
 py.font.init()
 
+GEN = 0
 # Окно приложения
 FPS = 30
-WIN_WIDTH = 900
-WIN_HEIGHT = 900
+WIN_WIDTH = 1400
+WIN_HEIGHT = 800
 STARTING_POS = (WIN_WIDTH / 2, WIN_HEIGHT - 100)
+
+SCORE_VEL_MULTIPLIER = .0
+BAD_GENOME_TRESHOLD = 200
 
 # Цвета
 WHITE = (255, 255, 255)
