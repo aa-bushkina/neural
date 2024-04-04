@@ -1,13 +1,12 @@
+import neat
 import os
-
-from NNdraw import NN
 from car import Car
 from road import Road
 from world import World
+from NNdraw import NN
 from config_variables import *
-import pygame as py
-py.font.init()
 
+py.font.init()
 background = py.Surface((WIN_WIDTH, WIN_HEIGHT))
 background.fill(GRAY)
 
@@ -24,8 +23,7 @@ def draw_win(cars, road, world, GEN):
     world.bestNN.draw(world)
 
     py.display.update()
-    world.win.blit(bg, (0,0))
-
+    world.win.blit(background, (0,0))
 
 def main(genomes = [], config = []):
     global GEN
@@ -100,5 +98,3 @@ if __name__ == "__main__":
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, "config_file.txt")
     run(config_path)
-
-
