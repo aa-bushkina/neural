@@ -1,3 +1,7 @@
+import pygame as py
+
+py.font.init()
+
 # Окно приложения
 FPS = 30
 WIN_WIDTH = 900
@@ -38,3 +42,13 @@ ACC = 0
 BRAKE = 1
 TURN_LEFT = 2
 TURN_RIGHT = 3
+
+# Настройки отображение генома
+NODE_FONT = py.font.SysFont("comicsans", 15)
+NODE_RADIUS = 20
+NODE_SPACING = 5
+LAYER_SPACING = 100
+CONNECTION_WIDTH = 1
+INPUT = 0
+MIDDLE = 1
+OUTPUT = 2
