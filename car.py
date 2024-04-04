@@ -4,7 +4,7 @@ from random import random
 
 import pygame
 
-from Road import Road, get_index
+from road import Road, get_index
 from config_variables import *
 from coordinates import Coordinates
 
