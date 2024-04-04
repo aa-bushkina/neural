@@ -4,6 +4,7 @@ from random import random
 
 import pygame
 
+from Road import Road
 from config_variables import MAX_VEL, IMG_NAMES, BRAKE, ACC, TURN_LEFT, TURN_RIGHT, ACTIVATION_TRESHOLD, FRICTION, \
     ACC_STRENGTH, BRAKE_STRENGTH, TURN_VEL, MAX_VEL_REDUCTION
 
@@ -17,7 +18,7 @@ class Car:
         self.x = x
         self.y = y
         self.rot = turn
-        self.vel = MAX_VEL/2
+        self.vel = MAX_VEL / 2
         self.acc = 0
         self.initImgs()
         self.commands = [0, 0, 0, 0]
@@ -25,7 +26,8 @@ class Car:
     # Инициализация картинки машины
     def initImgs(self):
         name = IMG_NAMES[floor(random() * len(IMG_NAMES)) % len(IMG_NAMES)]
-        self.img = pygame.transform.rotate(pygame.transform.scale(pygame.image.load(os.path.join("imgs", name)).convert_alpha(), (120,69)), -90)
+        self.img = pygame.transform.rotate(
+            pygame.transform.scale(pygame.image.load(os.path.join("imgs", name)).convert_alpha(), (120, 69)), -90)
 
     # Двигаем и поварачиваем машину
     def move(self, t):
@@ -44,7 +46,7 @@ class Car:
         if MAX_VEL_REDUCTION == 1 or t >= timeBuffer:
             max_vel_local = MAX_VEL
         else:
-            ratio = MAX_VEL_REDUCTION + (1 - MAX_VEL_REDUCTION)*(t/timeBuffer)
+            ratio = MAX_VEL_REDUCTION + (1 - MAX_VEL_REDUCTION) * (t / timeBuffer)
             max_vel_local = MAX_VEL * ratio
 
         self.vel += self.acc
@@ -60,8 +62,22 @@ class Car:
     def draw(self, world):
         screen_position = world.get_screen_coords(self.x, self.y)
         rotated_img = pygame.transform.rotate(self.img, -self.rot)
-        new_rect = rotated_img.get_rect(center = screen_position)
+        new_rect = rotated_img.get_rect(center=screen_position)
         world.win.blit(rotated_img, new_rect.topleft)
+
+    def detect_collision(self, road: Road):
+        mask = pygame.mask.from_surface(self.img)
+        (width, height) = mask.get_size()
+        for v in [road.left_border_points, road.right_border_points]:
+            for p in v:
+                x = p.x - self.x + width / 2
+                y = p.y - self.y + height / 2
+                try:
+                    if mask.get_at((int(x), int(y))):
+                        return True
+                except IndexError:
+                    continue
+        return False
 
 
 # Декодируем команду нейронной сети
