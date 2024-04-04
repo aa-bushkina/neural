@@ -1,7 +1,12 @@
 import os
 from math import floor, sin, cos, radians, degrees, atan2
 from random import random
-
+from config_variables import *
+import pygame as py
+import numpy as np
+from scipy import *
+from math import *
+from random import random, seed
 import pygame
 
 from road import Road, get_index
@@ -27,7 +32,7 @@ class Car:
     def initImgs(self):
         name = IMG_NAMES[floor(random() * len(IMG_NAMES)) % len(IMG_NAMES)]
         self.img = pygame.transform.rotate(
-            pygame.transform.scale(pygame.image.load(os.path.join("imgs", name)).convert_alpha(), (120, 69)), -90)
+            pygame.transform.scale(pygame.image.load(os.path.join("images", name)).convert_alpha(), (120, 69)), -90)
 
     def getInputs(self, world, road):
         sensors = []
