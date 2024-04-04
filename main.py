@@ -15,7 +15,7 @@ def draw_win(cars, road, world, GEN):
     for car in cars:
         car.draw(world)
 
-    text = STAT_FONT.render("Best Car Score: " + str(int(world.getScore())), 1, BLACK)
+    text = STAT_FONT.render("Best Car Score: " + str(int(world.get_score())), 1, BLACK)
     world.win.blit(text, (world.win_width - text.get_width() - 10, 10))
     text = STAT_FONT.render("Gen: " + str(GEN), 1, BLACK)
     world.win.blit(text, (world.win_width - text.get_width() - 10, 50))
