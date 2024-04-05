@@ -10,5 +10,5 @@ class Connection:
     def draw_connection(self, world):
         color = GREEN if self.weight >= 0 else RED
         width = int(abs(self.weight * CONNECTION_WIDTH))
-        py.draw.line(world.win, color, (self.input.x + NODE_RADIUS, self.input.y),
-                     (self.output.x - NODE_RADIUS, self.output.y), width)
+        py.draw.line(world.win, color, (self.input.x + NODE_RADIUS + 50, self.input.y),
+                     (self.output.x - NODE_RADIUS + 50, self.output.y), width)

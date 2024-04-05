@@ -2,7 +2,7 @@ import pygame as py
 
 py.font.init()
 
-GEN = 0
+GENERATION_COUNTER = 0
 # Окно приложения
 FPS = 30
 WIN_WIDTH = 1400

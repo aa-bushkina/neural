@@ -48,11 +48,10 @@ class Car:
                     pygame.draw.circle(world.win, RED, world.get_screen_coords(self.x + dx, self.y + dy), 6)
         for s in range(len(sensors)):
             sensors[s] = 1 - sensors[s] / SENSOR_DISTANCE
-
         return sensors
 
     # Двигаем и поворачиваем машину
-    def move(self, t):
+    def move(self, time):
         self.acc = FRICTION
 
         if decode_command(self.commands, ACC):
@@ -65,21 +64,21 @@ class Car:
             self.rotation += TURN_SPEED
 
         timeBuffer = 500
-        if MAX_VEL_REDUCTION == 1 or t >= timeBuffer:
-            max_vel_local = MAX_SPEED
+        if MAX_VEL_REDUCTION == 1 or time >= timeBuffer:
+            max_speed_local = MAX_SPEED
         else:
-            ratio = MAX_VEL_REDUCTION + (1 - MAX_VEL_REDUCTION) * (t / timeBuffer)
-            max_vel_local = MAX_SPEED * ratio
+            ratio = MAX_VEL_REDUCTION + (1 - MAX_VEL_REDUCTION) * (time / timeBuffer)
+            max_speed_local = MAX_SPEED * ratio
 
         self.speed += self.acc
-        if self.speed > max_vel_local:
-            self.speed = max_vel_local
+        if self.speed > max_speed_local:
+            self.speed = max_speed_local
         if self.speed < 0:
             self.speed = 0
         self.x = self.x + self.speed * sin(radians(self.rotation))
         self.y = self.y - self.speed * cos(radians(self.rotation))
 
-        return (self.x, self.y)
+        return self.x, self.y
 
     def draw(self, world):
         screen_position = world.get_screen_coords(self.x, self.y)
@@ -120,7 +119,7 @@ def getSegmentEquation(p, q):
     a = p.y - q.y
     b = q.x - p.x
     c = p.x * q.y - q.x * p.y
-    return (a, b, c)
+    return a, b, c
 
 
 def getDistance(car, sensors, sensorsEquations, p, q):

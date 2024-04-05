@@ -8,7 +8,7 @@ from config_variables import *
 
 py.font.init()
 background = py.Surface((WIN_WIDTH, WIN_HEIGHT))
-background.fill(GRAY)
+background.fill(WHITE)
 
 
 def draw_win(cars, road, world, GEN):
@@ -16,9 +16,9 @@ def draw_win(cars, road, world, GEN):
     for car in cars:
         car.draw(world)
 
-    text = STAT_FONT.render("Best Car Score: " + str(int(world.get_score())), 1, BLACK)
+    text = STAT_FONT.render("Пройденная дистанция: " + str(int(world.get_score())), 1, BLACK)
     world.win.blit(text, (world.win_width - text.get_width() - 10, 10))
-    text = STAT_FONT.render("Gen: " + str(GEN), 1, BLACK)
+    text = STAT_FONT.render("Поколение: " + str(GEN), 1, BLACK)
     world.win.blit(text, (world.win_width - text.get_width() - 10, 50))
 
     world.bestNN.draw(world)
@@ -28,33 +28,33 @@ def draw_win(cars, road, world, GEN):
 
 
 def main(genomes=[], config=[]):
-    global GEN
-    GEN += 1
+    global GENERATION_COUNTER
+    GENERATION_COUNTER += 1
 
     nets = []
-    ge = []
+    genoms = []
     cars = []
-    t = 0
+    time = 0
 
     world = World(STARTING_POS, WIN_WIDTH, WIN_HEIGHT)
     world.win.blit(background, (0, 0))
 
     NNs = []
 
-    for _, g in genomes:
-        net = neat.nn.FeedForwardNetwork.create(g, config)
+    for _, genom in genomes:
+        net = neat.nn.FeedForwardNetwork.create(genom, config)
         nets.append(net)
         cars.append(Car(0, 0, 0))
-        g.fitness = 0
-        ge.append(g)
-        NNs.append(NN(config, g, (90, 210)))
+        genom.fitness = 0
+        genoms.append(genom)
+        NNs.append(NN(config, genom, (90, 210)))
 
     road = Road(world)
     clock = py.time.Clock()
 
     run = True
     while run:
-        t += 1
+        time += 1
         clock.tick(FPS)
         world.update_score(0)
 
@@ -74,19 +74,19 @@ def main(genomes=[], config=[]):
             car.commands = nets[i].activate(tuple(input))
 
             y_old = car.y
-            (x, y) = car.move(t)
+            (x, y) = car.move(time)
 
-            if t > 10 and (car.detect_collision(road) or y > world.get_best_car_pos()[
+            if time > 10 and (car.detect_collision(road) or y > world.get_best_car_pos()[
                 1] + BAD_GENOME_TRESHOLD or y > y_old or car.speed < 0.1):
-                ge[i].fitness -= 1
+                genoms[i].fitness -= 1
                 cars.pop(i)
                 nets.pop(i)
-                ge.pop(i)
+                genoms.pop(i)
                 NNs.pop(i)
             else:
-                ge[i].fitness += -(y - y_old) / 100 + car.speed * SCORE_SPEED_MULTIPLIER
-                if ge[i].fitness > world.get_score():
-                    world.update_score(ge[i].fitness)
+                genoms[i].fitness += -(y - y_old) / 100 + car.speed * SCORE_SPEED_MULTIPLIER
+                if genoms[i].fitness > world.get_score():
+                    world.update_score(genoms[i].fitness)
                     world.bestNN = NNs[i]
                     world.best_inputs = input
                     world.best_commands = car.commands
@@ -101,7 +101,7 @@ def main(genomes=[], config=[]):
 
         world.update_best_car_pos((xb, yb))
         road.update(world)
-        draw_win(cars, road, world, GEN)
+        draw_win(cars, road, world, GENERATION_COUNTER)
 
 
 def run(config_path):
