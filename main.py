@@ -10,6 +10,7 @@ py.font.init()
 background = py.Surface((WIN_WIDTH, WIN_HEIGHT))
 background.fill(GRAY)
 
+
 def draw_win(cars, road, world, GEN):
     road.draw(world)
     for car in cars:
@@ -65,30 +66,30 @@ def main(genomes=[], config=[]):
 
         (xb, yb) = (0, 0)
         i = 0
-        while (i < len(cars)):
+        while i < len(cars):
             car = cars[i]
 
-            input = car.getInputs(world, road)
-            input.append(car.vel / MAX_VEL)
+            input = car.get_inputs(world, road)
+            input.append(car.speed / MAX_SPEED)
             car.commands = nets[i].activate(tuple(input))
 
             y_old = car.y
             (x, y) = car.move(t)
 
             if t > 10 and (car.detect_collision(road) or y > world.get_best_car_pos()[
-                1] + BAD_GENOME_TRESHOLD or y > y_old or car.vel < 0.1):
+                1] + BAD_GENOME_TRESHOLD or y > y_old or car.speed < 0.1):
                 ge[i].fitness -= 1
                 cars.pop(i)
                 nets.pop(i)
                 ge.pop(i)
                 NNs.pop(i)
             else:
-                ge[i].fitness += -(y - y_old) / 100 + car.vel * SCORE_VEL_MULTIPLIER
+                ge[i].fitness += -(y - y_old) / 100 + car.speed * SCORE_SPEED_MULTIPLIER
                 if ge[i].fitness > world.get_score():
                     world.update_score(ge[i].fitness)
                     world.bestNN = NNs[i]
-                    world.bestInputs = input
-                    world.bestCommands = car.commands
+                    world.best_inputs = input
+                    world.best_commands = car.commands
                 i += 1
 
             if y < yb:

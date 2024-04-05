@@ -1,14 +1,8 @@
 import os
 from math import floor, sin, cos, radians, degrees, atan2
-from random import random
-from config_variables import *
-import pygame as py
-import numpy as np
-from scipy import *
 from math import *
-from random import random, seed
+from random import random
 import pygame
-
 from road import Road, get_index
 from config_variables import *
 from coordinates import Coordinates
@@ -22,79 +16,79 @@ class Car:
     def __init__(self, x, y, turn):
         self.x = x
         self.y = y
-        self.rot = turn
-        self.vel = MAX_VEL / 2
+        self.rotation = turn
+        self.speed = MAX_SPEED / 2
         self.acc = 0
-        self.initImgs()
+        self.init_images()
         self.commands = [0, 0, 0, 0]
 
     # Инициализация картинки машины
-    def initImgs(self):
+    def init_images(self):
         name = IMG_NAMES[floor(random() * len(IMG_NAMES)) % len(IMG_NAMES)]
-        self.img = pygame.transform.rotate(
+        self.images = pygame.transform.rotate(
             pygame.transform.scale(pygame.image.load(os.path.join("images", name)).convert_alpha(), (120, 69)), -90)
 
-    def getInputs(self, world, road):
+    def get_inputs(self, world, road):
         sensors = []
         for k in range(8):
             sensors.append(SENSOR_DISTANCE)
-        sensorsEquations = getSensorEquations(self, world)
+        sensors_equations = get_sensor_equations(self, world)
         for v in [road.left_border_points, road.right_border_points]:
             i = road.bottom_point_index
             while v[i].y > self.y - SENSOR_DISTANCE:
                 next_index = get_index(i + 1, NUM_POINTS * road.num_points)
-                getDistance(self, sensors, sensorsEquations, v[i], v[next_index])
+                getDistance(self, sensors, sensors_equations, v[i], v[next_index])
                 i = next_index
         if CAR_DBG:
             for k, s in enumerate(sensors):
-                omega = radians(self.rot + 45 * k)
+                omega = radians(self.rotation + 45 * k)
                 dx = s * sin(omega)
                 dy = - s * cos(omega)
                 if s < SENSOR_DISTANCE:
-                    pygame.draw.circle(world.win, RED, world.getScreenCoords(self.x + dx, self.y + dy), 6)
+                    pygame.draw.circle(world.win, RED, world.get_screen_coords(self.x + dx, self.y + dy), 6)
         for s in range(len(sensors)):
             sensors[s] = 1 - sensors[s] / SENSOR_DISTANCE
 
         return sensors
 
-    # Двигаем и поварачиваем машину
+    # Двигаем и поворачиваем машину
     def move(self, t):
         self.acc = FRICTION
 
-        if decodeCommand(self.commands, ACC):
+        if decode_command(self.commands, ACC):
             self.acc = ACC_STRENGTH
-        if decodeCommand(self.commands, BRAKE):
+        if decode_command(self.commands, BRAKE):
             self.acc = -BRAKE_STRENGTH
-        if decodeCommand(self.commands, TURN_LEFT):
-            self.rot -= TURN_VEL
-        if decodeCommand(self.commands, TURN_RIGHT):
-            self.rot += TURN_VEL
+        if decode_command(self.commands, TURN_LEFT):
+            self.rotation -= TURN_SPEED
+        if decode_command(self.commands, TURN_RIGHT):
+            self.rotation += TURN_SPEED
 
         timeBuffer = 500
         if MAX_VEL_REDUCTION == 1 or t >= timeBuffer:
-            max_vel_local = MAX_VEL
+            max_vel_local = MAX_SPEED
         else:
             ratio = MAX_VEL_REDUCTION + (1 - MAX_VEL_REDUCTION) * (t / timeBuffer)
-            max_vel_local = MAX_VEL * ratio
+            max_vel_local = MAX_SPEED * ratio
 
-        self.vel += self.acc
-        if self.vel > max_vel_local:
-            self.vel = max_vel_local
-        if self.vel < 0:
-            self.vel = 0
-        self.x = self.x + self.vel * sin(radians(self.rot))
-        self.y = self.y - self.vel * cos(radians(self.rot))
+        self.speed += self.acc
+        if self.speed > max_vel_local:
+            self.speed = max_vel_local
+        if self.speed < 0:
+            self.speed = 0
+        self.x = self.x + self.speed * sin(radians(self.rotation))
+        self.y = self.y - self.speed * cos(radians(self.rotation))
 
         return (self.x, self.y)
 
     def draw(self, world):
         screen_position = world.get_screen_coords(self.x, self.y)
-        rotated_img = pygame.transform.rotate(self.img, -self.rot)
+        rotated_img = pygame.transform.rotate(self.images, -self.rotation)
         new_rect = rotated_img.get_rect(center=screen_position)
         world.win.blit(rotated_img, new_rect.topleft)
 
     def detect_collision(self, road: Road):
-        mask = pygame.mask.from_surface(self.img)
+        mask = pygame.mask.from_surface(self.images)
         (width, height) = mask.get_size()
         for v in [road.left_border_points, road.right_border_points]:
             for p in v:
@@ -108,15 +102,15 @@ class Car:
         return False
 
 
-def getSensorEquations(self, world):
+def get_sensor_equations(self, world):
     eq = []
     for i in range(4):
-        omega = radians(self.rot + 45 * i)
+        omega = radians(self.rotation + 45 * i)
         dx = SENSOR_DISTANCE * sin(omega)
         dy = - SENSOR_DISTANCE * cos(omega)
         if CAR_DBG:
-            pygame.draw.lines(world.win, GREEN, False, [world.getScreenCoords(self.x + dx, self.y + dy),
-                                                        world.getScreenCoords(self.x - dx, self.y - dy)], 2)
+            pygame.draw.lines(world.win, GREEN, False, [world.get_screen_coords(self.x + dx, self.y + dy),
+                                                        world.get_screen_coords(self.x - dx, self.y - dy)], 2)
         coef = getSegmentEquation(self, Coordinates(self.x + dx, self.y + dy))
         eq.append(coef)
     return eq
@@ -143,7 +137,7 @@ def getDistance(car, sensors, sensorsEquations, p, q):
         else:
             (x, y) = (abs(p.x - q.x), abs(p.y - q.y))
         dist = ((car.x - x) ** 2 + (car.y - y) ** 2) ** 0.5
-        omega = car.rot + 45 * i
+        omega = car.rotation + 45 * i
         alpha = 90 - degrees(atan2(car.y - y, x - car.x))
         if cos(alpha) * cos(omega) * 100 + sin(alpha) * sin(omega) * 100 > 0:
             index = i
@@ -155,7 +149,7 @@ def getDistance(car, sensors, sensorsEquations, p, q):
 
 
 # Декодируем команду нейронной сети
-def decodeCommand(commands, type):
+def decode_command(commands, type):
     if commands[type] > ACTIVATION_TRESHOLD:
         if type == ACC and commands[type] > commands[BRAKE]:
             return True

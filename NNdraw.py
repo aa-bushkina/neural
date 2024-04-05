@@ -16,7 +16,7 @@ class NN:
                        "Северо-запад", "Скорость"]
         output_names = ["Ускорение", "Замедление", "Налево", "Направо"]
         middle_nodes = [n for n in genome.nodes.keys()]
-        nodeIdList = []
+        node_id_list = []
 
         # nodes
         h = (INPUT_NEURONS - 1) * (NODE_RADIUS * 2 + NODE_SPACING)
@@ -24,7 +24,7 @@ class NN:
             n = Node(input, pos[0], pos[1] + int(-h / 2 + i * (NODE_RADIUS * 2 + NODE_SPACING)), INPUT,
                      [GREEN_PALE, GREEN, DARK_GREEN_PALE, DARK_GREEN], input_names[i], i)
             self.nodes.append(n)
-            nodeIdList.append(input)
+            node_id_list.append(input)
 
         h = (OUTPUT_NEURONS - 1) * (NODE_RADIUS * 2 + NODE_SPACING)
         for i, out in enumerate(config.genome_config.output_keys):
@@ -33,7 +33,7 @@ class NN:
                      [RED_PALE, RED, DARK_RED_PALE, DARK_RED], output_names[i], i)
             self.nodes.append(n)
             middle_nodes.remove(out)
-            nodeIdList.append(out)
+            node_id_list.append(out)
 
         h = (len(middle_nodes) - 1) * (NODE_RADIUS * 2 + NODE_SPACING)
         for i, m in enumerate(middle_nodes):
@@ -41,17 +41,17 @@ class NN:
                      self.pos[1] + int(-h / 2 + i * (NODE_RADIUS * 2 + NODE_SPACING)), MIDDLE,
                      [BLUE_PALE, DARK_BLUE, BLUE_PALE, DARK_BLUE])
             self.nodes.append(n)
-            nodeIdList.append(m)
+            node_id_list.append(m)
 
         self.connections = []
         for c in genome.connections.values():
             if c.enabled:
                 input, output = c.key
                 self.connections.append(
-                    Connection(self.nodes[nodeIdList.index(input)], self.nodes[nodeIdList.index(output)], c.weight))
+                    Connection(self.nodes[node_id_list.index(input)], self.nodes[node_id_list.index(output)], c.weight))
 
     def draw(self, world):
         for c in self.connections:
-            c.drawConnection(world)
+            c.draw_connection(world)
         for node in self.nodes:
             node.draw_node(world)

@@ -1,5 +1,6 @@
-from car import decodeCommand
+from car import decode_command
 from config_variables import *
+from world import World
 
 
 class Node:
@@ -13,7 +14,7 @@ class Node:
         self.index = index
 
     def draw_node(self, world):
-        colorScheme = self.getNodeColors(world)
+        colorScheme = self.get_node_colors(world)
 
         py.draw.circle(world.win, colorScheme[0], (self.x, self.y), NODE_RADIUS)
         py.draw.circle(world.win, colorScheme[1], (self.x, self.y), NODE_RADIUS - 2)
@@ -24,12 +25,12 @@ class Node:
                 self.x + (self.type - 1) * ((text.get_width() if not self.type else 0) + NODE_RADIUS + 5),
                 self.y - text.get_height() / 2))
 
-    def getNodeColors(self, world):
+    def get_node_colors(self, world: World):
 
         if self.type == INPUT:
-            ratio = world.bestInputs[self.index]
+            ratio = world.best_inputs[self.index]
         elif self.type == OUTPUT:
-            ratio = 1 if decodeCommand(world.bestCommands, self.index) else 0
+            ratio = 1 if decode_command(world.best_commands, self.index) else 0
         else:
             ratio = 0
 
