@@ -9,17 +9,23 @@ from config_variables import *
 py.font.init()
 background = py.Surface((WIN_WIDTH, WIN_HEIGHT))
 background.fill(WHITE)
+max_counter = 0
 
 
 def draw_win(cars, road, world, GEN):
     road.draw(world)
+    global max_counter
     for car in cars:
         car.draw(world)
 
+    if max_counter < int(world.get_score()):
+        max_counter = int(world.get_score())
     text = STAT_FONT.render("Пройденная дистанция: " + str(int(world.get_score())), 1, BLACK)
     world.win.blit(text, (world.win_width - text.get_width() - 10, 10))
     text = STAT_FONT.render("Поколение: " + str(GEN), 1, BLACK)
-    world.win.blit(text, (world.win_width - text.get_width() - 10, 50))
+    world.win.blit(text, (world.win_width - text.get_width() - 10, 60))
+    text = STAT_FONT.render("Max: " + str(max_counter), 1, BLACK)
+    world.win.blit(text, (world.win_width - text.get_width() - 10, 120))
 
     world.bestNN.draw(world)
 
